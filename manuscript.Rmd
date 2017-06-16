@@ -1,0 +1,55 @@
+---
+title: "Manuscript"
+author: "Nico Boyd, Greg Macfarlane, Kari Watkins"
+date: "6/16/2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup}
+library(geojsonio)
+library(leaflet)
+```
+
+
+# Abstract
+
+## Introduction
+
+This research will identify the correlation between size and access to urban parks, and physical activity, obesity and mental health at the neighborhood level. Proximity to parks is associated with increased physical activity and reduced obesity, but little research has been conducted on the relationship between accessibility to parks and health outcomes. 
+
+## Methods
+Using data for three urban areas, we created a new measure for access to parks called park choice accessibility. Park choice accessibility uses a gravity model to interact distance to parks and quality of those parks as defined by size and amenities. A small park very close to a neighborhood can have a major impact, but a larger park at a similar distance may have an even larger impact. Similarly, a large park can be further away and still have an impact on health outcomes. Using spatial regression analysis, we are assessing whether park choice accessibility is associated with increased physical activity or decreased prevalence of obesity at the neighborhood level. The analysis controls for socioeconomic covariates such as age, marital status, income, and educational attainment. 
+
+
+##
+Our anticipated results will assess the difference in physical activity and obesity at the neighborhood level when comparing proximity to parks and access to parks of various sizes and qualities as defined by park choice accessibility. We hope to make progress in achieving the Healthy People 2020 goals on physical activity, reduced sedentary behavior, and building healthy communities.
+
+
+# Background/Literature Review
+
+
+
+
+# Methods
+
+```{r load_data}
+denver_tracts <- geojson_read("data/denver_tracts.geojson", what = "sp")
+
+```
+
+
+
+# Results
+
+
+
+
+# Discussion
+
+
+
+
+
+# Conclusion
