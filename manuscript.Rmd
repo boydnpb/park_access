@@ -1,6 +1,6 @@
 ---
 title: "Manuscript"
-author: "Nico Boyd, Greg Macfarlane, Kari Watkins"
+author: "Nico Boyd, Greg Macfarlane, Kari Watkins, Dave Ederer"
 date: "6/16/2017"
 output:
   pdf_document: default
