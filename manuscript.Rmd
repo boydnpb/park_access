@@ -36,7 +36,13 @@ Our anticipated results will assess the difference in physical activity and obes
 
 ```{r load_data}
 denver_tracts <- geojson_read("data/denver_tracts.geojson", what = "sp")
+denver_parks <- geojson_read ("data/denver_parks.geojson", what = "sp")
 
+boston_tracts <- geojson_read("data/boston_tracts.geojson", what = "sp")
+boston_parks <- geojson_read("data/boston_parks.geojson", what = "sp")
+
+nyc_tracts <- geojson_read("data/nyc_tracts.geojson", what = "sp")
+nyc_parks <- geojson_read("data/nyc_parks.geojson", what = "sp")
 ```
 
 
