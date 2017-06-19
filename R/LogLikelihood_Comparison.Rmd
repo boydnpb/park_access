@@ -1,0 +1,61 @@
+---
+title: "Comparison of Log Likelihood Values"
+author: "Nico Boyd"
+date: "June 19, 2017"
+output:
+  html_document: default
+---
+
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width=120)
+```
+
+Greg - below I've created a table for each of our cities that compares the log likelilhood values between models. Something I found interesting was the fact that when park access is added into the models, the log likelihood values are the same for the physical activity and mental health models. Does this strike you as odd? 
+
+Also, quick question about model selection: since the log likelihood values are all negative, should I or should I not select the final models based on the highest **ABSOLUTE VALUE** of the log likelihood? If we're not selecting models based on absolute value, each city has two clear winners:
+
+  * Denver: models 1 & 4 (both equally likely)
+  * Boston: models 3 & 6 (both equally likely)
+  * NYC: models 1 & 2 (both equally likely)
+
+```{r denver_models, echo=FALSE}
+
+Denver_Loglikelihoods <- data.frame(row.names=paste("Denver",1:6))
+Denver_Loglikelihoods[,1] <- c(-184.46, -184.46, -184.46, -184.46, -184.46, -184.46)
+Denver_Loglikelihoods[,2] <- c(-218.96, -218.96, -218.96, -218.96, -218.96, -218.96)
+Denver_Loglikelihoods[,3] <- c(-218.96, -218.96, -218.96, -218.96, -218.96, -218.96)
+Denver_Loglikelihoods[,4] <- c(-184.39, -184.43, -184.43, -184.39, -184.43, -184.43)
+Denver_Loglikelihoods[,5] <- c(-218.06, -218.28, -218.31, -218.06, -218.28, -218.31)
+Denver_Loglikelihoods[,6] <- c(-218.06, -218.28, -218.31, -218.06, -218.28, -218.31)
+colnames(Denver_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+
+Denver_Loglikelihoods
+```
+
+```{r boston_models, echo=FALSE}
+
+Boston_Loglikelihoods <- data.frame(row.names=paste("Boston",1:6))
+Boston_Loglikelihoods[,1] <- c(-258.16, -258.16, -258.16, -258.16, -258.16, -258.16)
+Boston_Loglikelihoods[,2] <- c(-312.80, -312.80, -312.80, -312.80, -312.80, -312.80)
+Boston_Loglikelihoods[,3] <- c(-312.80, -312.80, -312.80, -312.80, -312.80, -312.80)
+Boston_Loglikelihoods[,4] <- c(-258.16, -258.16, -258.15, -258.16, -258.16, -258.15)
+Boston_Loglikelihoods[,5] <- c(-312.80, -312.79, -312.79, -312.80, -312.79, -312.79)
+Boston_Loglikelihoods[,6] <- c(-312.80, -312.79, -312.79, -312.80, -312.79, -312.79)
+colnames(Boston_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+
+Boston_Loglikelihoods
+```
+
+```{r nyc_models, echo=FALSE}
+
+NYC_Loglikelihoods <- data.frame(row.names=paste("NYC   ",1:3))
+NYC_Loglikelihoods[,1] <- c(-3929.85, -3929.85, -3929.85)
+NYC_Loglikelihoods[,2] <- c(-4421.83, -4421.83, -4421.83)
+NYC_Loglikelihoods[,3] <- c(-4421.83, -4421.83, -4421.83)
+NYC_Loglikelihoods[,4] <- c(-3929.14, -3929.14, -3929.36)
+NYC_Loglikelihoods[,5] <- c(-4421.80, -4421.80, -4421.82)
+NYC_Loglikelihoods[,6] <- c(-4421.80, -4421.80, -4421.82)
+colnames(NYC_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+
+NYC_Loglikelihoods
+```
