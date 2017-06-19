@@ -49,8 +49,35 @@ nyc_parks <- geojson_read("data/nyc_parks.geojson", what = "sp")
 
 # Results
 
+```{r denver_models}
 
 
+
+
+
+
+
+```
+
+```{r boston_models}
+
+
+
+
+
+
+
+```
+
+```{r nyc_models}
+
+
+
+
+
+
+
+```
 
 # Discussion
 
