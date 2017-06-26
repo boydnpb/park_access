@@ -319,7 +319,7 @@ htmlreg(boston_physact_models, caption = "Boston: Models of Variation in Self-Re
 ```
 
 
-##New York City
+## New York City
 
 Plot NYC geospatial data (tracts and parks):
 ```{r nyc_data}
