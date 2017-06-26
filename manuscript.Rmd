@@ -23,14 +23,12 @@ library(leaflet)
 # Abstract
 
 ## Introduction
-
 This research will identify the correlation between size and access to urban parks, and physical activity, obesity and mental health at the neighborhood level. Proximity to parks is associated with increased physical activity and reduced obesity, but little research has been conducted on the relationship between accessibility to parks and health outcomes. 
 
 ## Methods
 Using data for three urban areas, we created a new measure for access to parks called park choice accessibility. Park choice accessibility uses a gravity model to interact distance to parks and quality of those parks as defined by size and amenities. A small park very close to a neighborhood can have a major impact, but a larger park at a similar distance may have an even larger impact. Similarly, a large park can be further away and still have an impact on health outcomes. Using spatial regression analysis, we are assessing whether park choice accessibility is associated with increased physical activity or decreased prevalence of obesity at the neighborhood level. The analysis controls for socioeconomic covariates such as age, marital status, income, and educational attainment. 
 
-
-##
+## Results
 Our anticipated results will assess the difference in physical activity and obesity at the neighborhood level when comparing proximity to parks and access to parks of various sizes and qualities as defined by park choice accessibility. We hope to make progress in achieving the Healthy People 2020 goals on physical activity, reduced sedentary behavior, and building healthy communities.
 
 
@@ -40,7 +38,6 @@ Our anticipated results will assess the difference in physical activity and obes
 
 
 # Methods
-
 ```{r load_data}
 denver_tracts <- geojson_read("data/denver_tracts.geojson", what = "sp")
 denver_parks <- geojson_read ("data/denver_parks.geojson", what = "sp")
@@ -60,25 +57,26 @@ nyc_parks <- geojson_read("data/nyc_parks.geojson", what = "sp")
 
 Load Denver geospatial data (tracts and parks):
 ```{r denver_data}
-tracts <- readOGR(dsn = "data/Denver_Data.gdb", layer = "Denver_Final") 
-plot(tracts)
 
-parks <- readOGR(dsn = "data/Denver_Data.gdb", layer = "Denver_All_Parks") 
-plot(parks)
+#tracts <- readOGR(dsn = "data/Denver_Data.gdb", layer = "Denver_Final") 
+plot(denver_tracts)
+
+#parks <- readOGR(dsn = "data/Denver_Data.gdb", layer = "Denver_All_Parks") 
+plot(denver_parks)
 ```
 
 Transform the attribute table into a tibble and select the relevant variables:
 ```{r show_denverdata}
-tracts@data <- tbl_df(tracts@data) %>%
+denver_tracts@data <- tbl_df(tracts@data) %>%
   select(GEOID_TRAC, OBESITY, Park_Percent, PhysAct, MENTAL, Income1, Income2, Income3, Income4, Income5, Income6, Income7, Income8, Income9, Income10, Pop_Density, FulltimeWork, CollegePercent, Pct0to17, Pct18to29, Pct30to64, Pct65plus, SinglePercent, PctWhite, PctBlack, PctNative, PctAsian, PctPacific, PctOther, PctHispanic) %>%
     mutate_each(funs(ifelse(is.na(.), 0, .)), Park_Percent)
 tracts@data
 ```
 
-Calculate the logsum given a tracts and parks dataset:
+Calculate the logsum given the tracts and parks dataset:
 ```{r denver_accessibility}
 source('R/size00001dist5.R', echo=TRUE)
-tracts$park_ls <- calculate_park_logsums(tracts, parks, betas = c(.00001, -5))
+denver_tracts$park_ls <- calculate_park_logsums(denver_tracts, denver_parks, betas = c(.00001, -5))
 ```
 
 Create regression equations for use in spatial econometric models:
@@ -90,52 +88,52 @@ denver_parks_formula <- update(base_formula, . ~ . + park_ls)
 
 Locate the centroid of all parks and all census tracts and create a distance matrix:
 ```{r denver_distancematrix}
-tract_centroids <- gCentroid(tracts, byid = TRUE) #if byid = FALSE, then centroid of "all" points
-park_centroids <- gCentroid(parks, byid = TRUE)
+tract_centroids <- gCentroid(denver_tracts, byid = TRUE) #if byid = FALSE, then centroid of "all" points
+park_centroids <- gCentroid(denver_parks, byid = TRUE)
 distance_matrix <- gDistance(tract_centroids, park_centroids, byid = TRUE)
 dim(distance_matrix)
 ```
 
 Create a spatial weights matrix:
 ```{r denver_W}
-neighbors <- poly2nb(tracts, queen = FALSE)
+neighbors <- poly2nb(denver_tracts, queen = FALSE)
 W <- nb2listw(neighbours = neighbors, zero.policy = TRUE)
 print(W, zero.policy = TRUE)
 ```
 
 Estimate spatial econometric models for the `OBESITY` variable. The first model of each different type does not include `park_ls`:
 ```{r denver_spmodels_obesity}
-denver_obese_sem <- errorsarlm(update(denver_base_formula, OBESITY ~ .), data = tracts@data, 
+denver_obese_sem <- errorsarlm(update(denver_base_formula, OBESITY ~ .), data = denver_tracts@data, 
                       listw = W, zero.policy = TRUE)
-denver_obese_sem2 <- errorsarlm(update(denver_parks_formula, OBESITY ~ .), data = tracts@data, 
+denver_obese_sem2 <- errorsarlm(update(denver_parks_formula, OBESITY ~ .), data = denver_tracts@data, 
                       listw = W, zero.policy = TRUE)
-denver_obese_sdm <- lagsarlm(update(denver_base_formula, OBESITY ~ .), data = tracts@data, 
+denver_obese_sdm <- lagsarlm(update(denver_base_formula, OBESITY ~ .), data = denver_tracts@data, 
                       listw = W, zero.policy = TRUE, type = "mixed")
-denver_obese_sdm2 <- lagsarlm(update(denver_parks_formula, OBESITY ~ .), data = tracts@data, 
+denver_obese_sdm2 <- lagsarlm(update(denver_parks_formula, OBESITY ~ .), data = denver_tracts@data, 
                       listw = W, zero.policy = TRUE, type = "mixed")
 ```
 
 Estimate spatial econometric models for the `PhysAct` variable. The first model of each different type does not include `park_ls`:
 ```{r denver_spmodels_physact}
-denver_physact_sem <- errorsarlm(update(denver_base_formula, PhysAct ~ .), data = tracts@data, 
+denver_physact_sem <- errorsarlm(update(denver_base_formula, PhysAct ~ .), data = denver_tracts@data, 
                           listw = W, zero.policy = TRUE)
 denver_physact_sem2 <- errorsarlm(update(denver_parks_formula, PhysAct ~ .), 
-                           data = tracts@data, listw = W, zero.policy = TRUE)
-denver_physact_sdm <- lagsarlm(update(denver_base_formula, PhysAct ~ .), data = tracts@data, 
+                           data = denver_tracts@data, listw = W, zero.policy = TRUE)
+denver_physact_sdm <- lagsarlm(update(denver_base_formula, PhysAct ~ .), data = denver_tracts@data, 
                         listw = W, zero.policy = TRUE, type = "mixed")
-denver_physact_sdm2 <- lagsarlm(update(denver_parks_formula, PhysAct ~ .), data = tracts@data,
+denver_physact_sdm2 <- lagsarlm(update(denver_parks_formula, PhysAct ~ .), data = denver_tracts@data,
                          listw = W, zero.policy = TRUE, type = "mixed")
 ```
 
 Estimate spatial econometric models for the `MENTAL` variable. The first model of each different type does not include `park_ls`:
 ```{r denver_spmodels_mental}
-denver_mental_sem <- errorsarlm(update(denver_base_formula, MENTAL ~ .), data = tracts@data, 
+denver_mental_sem <- errorsarlm(update(denver_base_formula, MENTAL ~ .), data = denver_tracts@data, 
                           listw = W, zero.policy = TRUE)
 denver_mental_sem2 <- errorsarlm(update(denver_parks_formula, MENTAL ~ .), 
-                           data = tracts@data, listw = W, zero.policy = TRUE)
-denver_mental_sdm <- lagsarlm(update(denver_base_formula, MENTAL ~ .), data = tracts@data, 
+                           data = denver_tracts@data, listw = W, zero.policy = TRUE)
+denver_mental_sdm <- lagsarlm(update(denver_base_formula, MENTAL ~ .), data = denver_tracts@data, 
                         listw = W, zero.policy = TRUE, type = "mixed")
-denver_mental_sdm2 <- lagsarlm(update(denver_parks_formula, MENTAL ~ .), data = tracts@data,
+denver_mental_sdm2 <- lagsarlm(update(denver_parks_formula, MENTAL ~ .), data = denver_tracts@data,
                          listw = W, zero.policy = TRUE, type = "mixed")
 ```
 
