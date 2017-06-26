@@ -70,7 +70,7 @@ Transform the attribute table into a tibble and select the relevant variables:
 denver_tracts@data <- tbl_df(tracts@data) %>%
   select(GEOID_TRAC, OBESITY, Park_Percent, PhysAct, MENTAL, Income1, Income2, Income3, Income4, Income5, Income6, Income7, Income8, Income9, Income10, Pop_Density, FulltimeWork, CollegePercent, Pct0to17, Pct18to29, Pct30to64, Pct65plus, SinglePercent, PctWhite, PctBlack, PctNative, PctAsian, PctPacific, PctOther, PctHispanic) %>%
     mutate_each(funs(ifelse(is.na(.), 0, .)), Park_Percent)
-tracts@data
+denver_tracts@data
 ```
 
 Calculate the logsum given the tracts and parks dataset:
@@ -202,12 +202,12 @@ Transform the attribute table into a tibble and select the relevant variables:
 ```{r show_bostondata}
 tracts@data <- tbl_df(tracts@data) %>%
   select(GEOID10, OBESITY, Phys_Act, MENTAL, Park_Percent, Income1, Income2, Income3, Income4, Income5, Income6, Income7, Income8, Income9, Income10, Pop_Density, FulltimeWork, CollegeDeg, Pct0to17, Pct18to29, Pct30to64, Pct65plus, SinglePercent, PctWhite, PctBlack, PctNative, PctAsian, PctPacific, PctOther, PctHispanic)
-tracts@data
+boston_tracts@data
 ```
 
 Calculate the logsum given the tracts and parks dataset:
 ```{r boston_accessibility}
-source('boston_size00001dist30.R', echo=TRUE)
+source('R/boston_size00001dist30.R', echo=TRUE)
 boston_tracts$park_ls <- calculate_park_logsums(boston_tracts, boston_parks, betas = c(.00001, -30))
 ```
 
@@ -320,16 +320,136 @@ htmlreg(boston_physact_models, caption = "Boston: Models of Variation in Self-Re
 
 
 ##New York City
-```{r nyc_models}
 
+Plot NYC geospatial data (tracts and parks):
+```{r nyc_data}
+#nyc_tracts2 <- readOGR(dsn = "data/NYC_Data.gdb", layer = "NYC_Final")
+plot(nyc_tracts)
 
-
-
-
-
-
+#nyc_parks2 <- readOGR(dsn = "data/NYC_Data.gdb", layer = "NYC_All_Parks") 
+plot(nyc_parks)
 ```
 
+Transform the attribute table into a tibble and select the relevant variables: 
+```{r show_nycdata}
+nyc_tracts@data <- tbl_df(tracts@data) %>%
+  select(GEOID, OBESITY, Park_Percent, Phys_Act, MENTAL, Income1, Income2, Income3, Income4, Income5, Income6, Income7, Income8, Income9, Income10, Pop_Density, FulltimeWork, CollegeDeg, Pct0to17, Pct18to29, Pct30to64, Pct65plus, Single_Percent, PctWhite, PctBlack, PctNative, PctAsian, PctPacific, PctOther, PctHispanic) %>%
+    mutate_each(funs(ifelse(is.na(.), 0, .)), Park_Percent)
+nyc_tracts@data
+```
+
+Calculate the logsum given a tracts and parks dataset:
+```{r nyc_accessibility}
+source('R/nyc_size00001dist5.R', echo=TRUE)
+nyc_tracts$park_ls <- calculate_park_logsums(nyc_tracts, nyc_parks, betas = c(.00001, -5))
+```
+
+Create regression equations for use in spatial econometric models:
+```{r nyc_equations}
+base_formula <- formula(~Income1 + Income2 + Income3 + Income4 + Income5 + Income6 + Income7 + Income8 + Income9 + Income10 + log(Pop_Density) + FulltimeWork + CollegeDeg + Single_Percent + Pct0to17 + Pct18to29 + Pct30to64 + Pct65plus + PctWhite + PctBlack + PctNative + PctAsian + PctPacific + PctOther + PctHispanic)
+
+parks_formula <- update(base_formula, . ~ . + park_ls)
+```
+
+Locate the centroid of all parks and all census tracts and create a distance matrix:
+```{r nyc_distancematrix}
+nyc_tract_centroids <- gCentroid(nyc_tracts, byid = TRUE) #if byid = FALSE, then centroid of "all" points
+nyc_park_centroids <- gCentroid(nyc_parks, byid = TRUE)
+nyc_distance_matrix <- gDistance(nyc_tract_centroids, nyc_park_centroids, byid = TRUE)
+dim(nyc_distance_matrix)
+```
+
+Create a spatial weights matrix:
+```{r nyc_W}
+nyc_neighbors <- poly2nb(nyc_tracts, queen = FALSE)
+nyc_W <- nb2listw(neighbours = nyc_neighbors, zero.policy = TRUE)
+print(nyc_W, zero.policy = TRUE)
+```
+
+Estimate spatial econometric models for the `OBESITY` variable. The first model of each different type does not include `park_ls`:
+```{r nyc_spmodels_obesity}
+nyc_obese_sem <- errorsarlm(update(nyc_base_formula, OBESITY ~ .), data = nyc_tracts@data, 
+                      listw = nyc_W, zero.policy = TRUE)
+nyc_obese_sem2 <- errorsarlm(update(nyc_parks_formula, OBESITY ~ .), data = nyc_tracts@data, 
+                      listw = nyc_W, zero.policy = TRUE)
+nyc_obese_sdm <- lagsarlm(update(nyc_base_formula, OBESITY ~ .), data = nyc_tracts@data, 
+                      listw = nyc_W, zero.policy = TRUE, type = "mixed")
+nyc_obese_sdm2 <- lagsarlm(update(nyc_parks_formula, OBESITY ~ .), data = nyc_tracts@data, 
+                      listw = nyc_W, zero.policy = TRUE, type = "mixed")
+```
+
+Estimate spatial econometric models for the `Phys_Act` variable. The first model of each different type does not include `park_ls`:
+```{r nyc_spmodels_physact}
+nyc_physact_sem <- errorsarlm(update(nyc_base_formula, Phys_Act ~ .), data = nyc_tracts@data, 
+                          listw = nyc_W, zero.policy = TRUE)
+nyc_physact_sem2 <- errorsarlm(update(nyc_parks_formula, Phys_Act ~ .), 
+                           data = nyc_tracts@data, listw = nyc_W, zero.policy = TRUE)
+nyc_physact_sdm <- lagsarlm(update(nyc_base_formula, Phys_Act ~ .), data = nyc_tracts@data, 
+                        listw = nyc_W, zero.policy = TRUE, type = "mixed")
+nyc_physact_sdm2 <- lagsarlm(update(nyc_parks_formula, Phys_Act ~ .), data = nyc_tracts@data,
+                         listw = nyc_W, zero.policy = TRUE, type = "mixed")
+```
+
+Estimate spatial econometric models for the `MENTAL` variable. The first model of each different type does not include `park_ls`:
+```{r nyc_spmodels_mental}
+nyc_mental_sem <- errorsarlm(update(nyc_base_formula, MENTAL ~ .), data = nyc_tracts@data, 
+                          listw = nyc_W, zero.policy = TRUE)
+nyc_mental_sem2 <- errorsarlm(update(nyc_parks_formula, MENTAL ~ .), 
+                           data = nyc_tracts@data, listw = nyc_W, zero.policy = TRUE)
+nyc_mental_sdm <- lagsarlm(update(nyc_base_formula, MENTAL ~ .), data = nyc_tracts@data, 
+                        listw = nyc_W, zero.policy = TRUE, type = "mixed")
+nyc_mental_sdm2 <- lagsarlm(update(nyc_parks_formula, MENTAL ~ .), data = nyc_tracts@data,
+                         listw = nyc_W, zero.policy = TRUE, type = "mixed")
+```
+
+Calculate the impacts of the spatial durbin models:
+```{r nycSDM_impacts}
+nyc_listw <- as(nyc_W, "CsparseMatrix")
+nyc_tr_mult <- trW(nyc_listw, type="mult")
+nyc_tr_MC <- trW(nyc_listw, type="MC")
+set.seed(1)
+
+nyc_noparks_obesemult <- impacts(nyc_obese_sdm, tr=nyc_tr_mult)
+nyc_parks_obesemult <- impacts(nyc_obese_sdm2, tr=nyc_tr_mult)
+nyc_noparks_obeseMC <- impacts(nyc_obese_sdm, tr=nyc_tr_MC)
+nyc_parks_obeseMC <- impacts(nyc_obese_sdm2, tr=nyc_tr_MC)
+
+
+nyc_noparks_physactmult <- impacts(nyc_physact_sdm, tr=nyc_tr_mult)
+nyc_parks_physactmult <- impacts(nyc_physact_sdm2, tr=nyc_tr_mult)
+nyc_noparks_physactMC <- impacts(nyc_physact_sdm, tr=nyc_tr_MC)
+nyc_parks_physactMC <- impacts(nyc_physact_sdm2, tr=nyc_tr_MC)
+
+
+nyc_noparks_mentalmult <- impacts(nyc_mental_sdm, tr=nyc_tr_mult)
+nyc_parks_mentalmult <- impacts(nyc_mental_sdm2, tr=nyc_tr_mult)
+nyc_noparks_mentalMC <- impacts(nyc_mental_sdm, tr=nyc_tr_MC)
+nyc_parks_mentalMC <- impacts(nyc_mental_sdm2, tr=nyc_tr_MC)
+```
+
+Compare the models with `htmlreg()`. First the obesity models:
+```{r nyc_obesity_summary, results="asis", eval=FALSE}
+nyc_obesity_models <- list(nyc_obese_sem, nyc_obese_sem2, nyc_obese_sdm, nyc_obese_sdm2)
+names(nyc_obesity_models) <-  paste(rep(c("SEM", "SDM"), each = 2),
+                                rep(c("Base", "Parks")))
+htmlreg(nyc_obesity_models, caption = "NYC: Models of Obesity Prevalence")
+```
+
+Next, the physical activity models:
+```{r nyc_physact_summary, results="asis", eval=FALSE}
+nyc_physact_models <- list(nyc_physact_sem, nyc_physact_sem2, nyc_physact_sdm, nyc_physact_sdm2)
+names(nyc_physact_models) <-  paste(rep(c("SEM", "SDM"), each = 2),
+                                rep(c("Base", "Parks")))
+htmlreg(nyc_physact_models, caption = "NYC: Models of Physical Activity Participation")
+```
+
+And third, the mental health models:
+```{r nyc_mental_summary, results="asis", eval=FALSE}
+nyc_mental_models <- list(nyc_mental_sem, nyc_mental_sem2, nyc_mental_sdm, nyc_mental_sdm2)
+names(nyc_mental_models) <-  paste(rep(c("SEM", "SDM"), each = 2),
+                                rep(c("Base", "Parks")))
+htmlreg(nyc_physact_models, caption = "NYC: Models of Variation in Self-Reported Mental Health")
+```
 
 
 # Discussion
