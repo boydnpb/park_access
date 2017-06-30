@@ -67,7 +67,7 @@ plot(denver_parks)
 
 Transform the attribute table into a tibble and select the relevant variables:
 ```{r show_denverdata}
-denver_tracts@data <- tbl_df(tracts@data) %>%
+denver_tracts@data <- tbl_df(denver_tracts@data) %>%
   select(GEOID_TRAC, OBESITY, Park_Percent, PhysAct, MENTAL, Income1, Income2, Income3, Income4, Income5, Income6, Income7, Income8, Income9, Income10, Pop_Density, FulltimeWork, CollegePercent, Pct0to17, Pct18to29, Pct30to64, Pct65plus, SinglePercent, PctWhite, PctBlack, PctNative, PctAsian, PctPacific, PctOther, PctHispanic) %>%
     mutate_each(funs(ifelse(is.na(.), 0, .)), Park_Percent)
 denver_tracts@data
@@ -83,14 +83,14 @@ Create regression equations for use in spatial econometric models:
 ```{r denver_equations}
 denver_base_formula <- formula(~Income1 + Income2 + Income3 + Income4 + Income5 + Income6 + Income7 + Income8 + Income9 + Income10 + log(Pop_Density) + FulltimeWork + CollegePercent + SinglePercent + Pct0to17 + Pct18to29 + Pct30to64 + Pct65plus + PctWhite + PctBlack + PctNative + PctAsian + PctPacific + PctOther + PctHispanic)
 
-denver_parks_formula <- update(base_formula, . ~ . + park_ls)
+denver_parks_formula <- update(denver_base_formula, . ~ . + park_ls)
 ```
 
 Locate the centroid of all parks and all census tracts and create a distance matrix:
 ```{r denver_distancematrix}
 denver_tract_centroids <- gCentroid(denver_tracts, byid = TRUE) #if byid = FALSE, then centroid of "all" points
 denver_park_centroids <- gCentroid(denver_parks, byid = TRUE)
-distance_matrix <- gDistance(denver_tract_centroids, denver_park_centroids, byid = TRUE)
+denver_distance_matrix <- gDistance(denver_tract_centroids, denver_park_centroids, byid = TRUE)
 dim(denver_distance_matrix)
 ```
 
@@ -200,7 +200,7 @@ plot(boston_parks)
 
 Transform the attribute table into a tibble and select the relevant variables:
 ```{r show_bostondata}
-tracts@data <- tbl_df(tracts@data) %>%
+boston_tracts@data <- tbl_df(boston_tracts@data) %>%
   select(GEOID10, OBESITY, Phys_Act, MENTAL, Park_Percent, Income1, Income2, Income3, Income4, Income5, Income6, Income7, Income8, Income9, Income10, Pop_Density, FulltimeWork, CollegeDeg, Pct0to17, Pct18to29, Pct30to64, Pct65plus, SinglePercent, PctWhite, PctBlack, PctNative, PctAsian, PctPacific, PctOther, PctHispanic)
 boston_tracts@data
 ```
@@ -215,7 +215,7 @@ Create regression equations for use in spatial econometric models:
 ```{r boston_equations}
 boston_base_formula <- formula(~Income1 + Income2 + Income3 + Income4 + Income5 + Income6 + Income7 + Income8 + Income9 + Income10 + log(Pop_Density) + FulltimeWork + CollegeDeg + SinglePercent + Pct0to17 + Pct18to29 + Pct30to64 + Pct65plus + PctWhite + PctBlack + PctNative + PctAsian + PctPacific + PctOther + PctHispanic)
 
-boston_parks_formula <- update(base_formula, . ~ . + park_ls)
+boston_parks_formula <- update(boston_base_formula, . ~ . + park_ls)
 ```
 
 Locate the centroid of all parks and all census tracts and create a distance matrix:
@@ -332,7 +332,7 @@ plot(nyc_parks)
 
 Transform the attribute table into a tibble and select the relevant variables: 
 ```{r show_nycdata}
-nyc_tracts@data <- tbl_df(tracts@data) %>%
+nyc_tracts@data <- tbl_df(nyc_tracts@data) %>%
   select(GEOID, OBESITY, Park_Percent, Phys_Act, MENTAL, Income1, Income2, Income3, Income4, Income5, Income6, Income7, Income8, Income9, Income10, Pop_Density, FulltimeWork, CollegeDeg, Pct0to17, Pct18to29, Pct30to64, Pct65plus, Single_Percent, PctWhite, PctBlack, PctNative, PctAsian, PctPacific, PctOther, PctHispanic) %>%
     mutate_each(funs(ifelse(is.na(.), 0, .)), Park_Percent)
 nyc_tracts@data
@@ -346,9 +346,9 @@ nyc_tracts$park_ls <- calculate_park_logsums(nyc_tracts, nyc_parks, betas = c(.0
 
 Create regression equations for use in spatial econometric models:
 ```{r nyc_equations}
-base_formula <- formula(~Income1 + Income2 + Income3 + Income4 + Income5 + Income6 + Income7 + Income8 + Income9 + Income10 + log(Pop_Density) + FulltimeWork + CollegeDeg + Single_Percent + Pct0to17 + Pct18to29 + Pct30to64 + Pct65plus + PctWhite + PctBlack + PctNative + PctAsian + PctPacific + PctOther + PctHispanic)
+nyc_base_formula <- formula(~Income1 + Income2 + Income3 + Income4 + Income5 + Income6 + Income7 + Income8 + Income9 + Income10 + log(Pop_Density) + FulltimeWork + CollegeDeg + Single_Percent + Pct0to17 + Pct18to29 + Pct30to64 + Pct65plus + PctWhite + PctBlack + PctNative + PctAsian + PctPacific + PctOther + PctHispanic)
 
-parks_formula <- update(base_formula, . ~ . + park_ls)
+nyc_parks_formula <- update(nyc_base_formula, . ~ . + park_ls)
 ```
 
 Locate the centroid of all parks and all census tracts and create a distance matrix:
