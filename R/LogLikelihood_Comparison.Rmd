@@ -12,7 +12,13 @@ options(width=120)
 
 Greg - below I've created a table for each of our cities that compares the log likelilhood values between models. Something I found interesting was the fact that when park access is added into the models, the log likelihood values are the same for the physical activity and mental health models. Does this strike you as odd? 
 
+  > It's more odd that the log-likelihoods are the same for both model before
+  the park access is added. Are you sure you didn't copy the wrong values/use the
+  wrong formula?
+
 Also, quick question about model selection: since the log likelihood values are all negative, should I or should I not select the final models based on the highest **ABSOLUTE VALUE** of the log likelihood? If we're not selecting models based on absolute value, each city has two clear winners:
+
+  > That's right; pick the least negative value.
 
   * Denver: models 1 & 4 (both equally likely)
   * Boston: models 3 & 6 (both equally likely)
