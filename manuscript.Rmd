@@ -63,7 +63,6 @@ park_shapes <- list(denver_parks, boston_parks, nyc_parks)
 ```
 
 
-
 # Results
 
 ## Denver
@@ -93,23 +92,34 @@ regression_data <-
   })
 ```
 
+
+```{r}
+denver_plots <- spTransform(denver_tracts, CRSobj = CRS("+init=epsg:4326"))
+library(leaflet)
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = denver_plots)
+```
+
+
 DISCUSSION OF LOGSUM CALCULATION
 
 Calculate the logsum given the tracts and parks dataset:
 ```{r accessibility}
 regression_data[[1]]["park_ls"] <- calculate_park_logsums(
   denver_tracts, denver_parks, betas = c(.00001, -5))
-regression_data[[2]]["park_ls"] <- calculate_park_logsums(
-  boston_tracts, boston_parks, betas = c(.00001, -30))
-regression_data[[3]]["park_ls"] <- calculate_park_logsums(
-  nyc_tracts, nyc_parks, betas = c(.00001, -5))
+# regression_data[[2]]["park_ls"] <- calculate_park_logsums(
+#   boston_tracts, boston_parks, betas = c(.00001, -30))
+# regression_data[[3]]["park_ls"] <- calculate_park_logsums(
+#   nyc_tracts, nyc_parks, betas = c(.00001, -5))
 ```
 
 Create regression equations for use in spatial econometric models:
+
+We looked at income and it doesn't matter.
 ```{r regression_eq}
 base_formula <- formula(
-  ~ Income1 + Income2 + Income3 + Income4 + Income5 + Income6 + Income7 + 
-    Income8 + Income9 + Income10 + log(Pop_Density) + FulltimeWork + 
+  ~ log(Pop_Density) + FulltimeWork + 
     CollegePercent + SinglePercent + Pct0to17 + Pct18to29 + Pct30to64 + 
     Pct65plus + PctWhite + PctBlack + PctNative + PctAsian + PctPacific + 
     PctOther + PctHispanic)
@@ -118,7 +128,7 @@ parks_formula <- update(base_formula, . ~ . + park_ls)
 ```
 
 Locate the centroid of all parks and all census tracts and create a distance matrix:
-```{r distancematrix}
+```{r distancematrix, eval = FALSE}
 # why are we computing the distance matrices if we are using contiguity-based
 # neighbors?
 tract_centroids <- lapply(seq_along(1:length(cities)), function(i){
@@ -178,7 +188,9 @@ names(parks_lm) <- names(base_lm) <- dependent_variables
 # get a model with summary(base_lm$OBESITY$denver), for instance.
 ```
 
-```{r sem}
+A likelihood ratio test of the SDM and SEM revealed that the SDM is more likely.
+
+```{r sem, eval = FALSE}
 base_sem <- lapply(seq_along(1:length(dependent_variables)), function(dv){
   this_formula <- substitute(update(base_formula, x ~ .), 
                              list(x = as.name(dependent_variables[dv]) ))
@@ -252,7 +264,7 @@ tr_mc <- lapply(list_ws, function(x){
 })
 
 
-mc_impacts <- lapply(base_sdm, function(dv){
+mc_impacts <- lapply(park_sdm, function(dv){
   # TODO
   impacts <- lapply(seq_along(1:1), function(i) {
     impact_summary(summary(impacts(dv[[i]], tr = tr_mc[[i]], R = 500, empirical = TRUE)))
@@ -276,7 +288,7 @@ denver_obesity_models <- list(
 names(denver_obesity_models) <- paste(rep(c("SEM", "SDM"), each = 2), 
                                       rep(c("Base", "Parks")))
 
-htmlreg(denver_obesity_models, caption = "Denver: Models of Obesity Prevalence")
+screenreg(denver_obesity_models, caption = "Denver: Models of Obesity Prevalence")
 ```
 
 Next, the physical activity models:
