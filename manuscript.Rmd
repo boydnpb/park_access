@@ -47,6 +47,8 @@ Our anticipated results will assess the difference in physical activity and obes
 
 # Methods
 ```{r load_data}
+# I've standardized the variable names based on the Boston dataset, so let's use those variable names moving forward. I also removed the Northeasternmost census tract from the Denver dataset as you suggested.
+
 denver_tracts <- geojson_read("data/denver_tracts.geojson", what = "sp")
 denver_tracts$GEOID10 <- denver_tracts$GEOID_TRAC
 denver_tracts$Phys_Act <- denver_tracts$PhysAct
