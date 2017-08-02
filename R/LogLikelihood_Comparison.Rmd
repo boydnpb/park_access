@@ -1,7 +1,7 @@
 ---
 title: "Comparison of Log Likelihood Values"
 author: "Nico Boyd"
-date: "June 19, 2017"
+date: "August 1, 2017"
 output:
   html_document: default
 ---
@@ -15,53 +15,122 @@ Greg - below I've created a table for each of our cities that compares the log l
   > It's more odd that the log-likelihoods are the same for both model before
   the park access is added. Are you sure you didn't copy the wrong values/use the
   wrong formula?
+  
+  > *I went ahead and removed the large Northeastern census tract from Denver and also removed a handful of tracts      from Boston that comprised mostly null values. I re-ran the models and double checked myself but sure enough, the     log-likelihoods were the same for each set of models before adding park access. I discovered that the reason the log   likelihood values were the same for the physical activity and mental health models after adding park access was       that I had accidentally printed the physical activity model to htmlreg twice, so I fixed that problem and updated my   tables with the correct values. The results are less straightforward than what we saw before; see my notes below on   which models are most likely for each city and dependent variable.*
 
 Also, quick question about model selection: since the log likelihood values are all negative, should I or should I not select the final models based on the highest **ABSOLUTE VALUE** of the log likelihood? If we're not selecting models based on absolute value, each city has two clear winners:
 
   > That's right; pick the least negative value.
 
-  * Denver: models 1 & 4 (both equally likely)
-  * Boston: models 3 & 6 (both equally likely)
-  * NYC: models 1 & 2 (both equally likely)
+  * Denver: SEM models 1 & 4 are most likely (both equally so) for physical activity and mental health, but least         likely for obesity; SEM models 2 & 3 are tied for most likely for obesity. The same is true of the SDM models.
+  
+  * Boston: SEM models 3 & 6 remain the most likely for all three dependent variables. However, for the SDM models, 1     & 3 are the most likely for all three variables.
+  
+  * NYC: SEM models 1 & 2 are most likely for obesity and physical activity, while all three models are equally likely     for mental health. For the SDM models, model 3 is most likely for physical activity and mental health, but Model 1     is most likely for obesity.
 
-```{r denver_models, echo=FALSE}
 
-Denver_Loglikelihoods <- data.frame(row.names=paste("Denver",1:6))
-Denver_Loglikelihoods[,1] <- c(-184.46, -184.46, -184.46, -184.46, -184.46, -184.46)
-Denver_Loglikelihoods[,2] <- c(-218.96, -218.96, -218.96, -218.96, -218.96, -218.96)
-Denver_Loglikelihoods[,3] <- c(-218.96, -218.96, -218.96, -218.96, -218.96, -218.96)
-Denver_Loglikelihoods[,4] <- c(-184.39, -184.43, -184.43, -184.39, -184.43, -184.43)
-Denver_Loglikelihoods[,5] <- c(-218.06, -218.28, -218.31, -218.06, -218.28, -218.31)
-Denver_Loglikelihoods[,6] <- c(-218.06, -218.28, -218.31, -218.06, -218.28, -218.31)
-colnames(Denver_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+### Denver SEM Models
+Models 1 and 4 are the most likely (both equally so) for physical activity and mental health, but least likely for obesity.
+```{r denver_SEM_models, echo=FALSE}
 
-Denver_Loglikelihoods
+Denver_SEM_Loglikelihoods <- data.frame(row.names=paste("Denver",1:6))
+Denver_SEM_Loglikelihoods[,1] <- c(-183.33, -183.33, -183.33, -183.33, -183.33, -183.33)
+Denver_SEM_Loglikelihoods[,2] <- c(-216.98, -216.98, -216.98, -216.98, -216.98, -216.98)
+Denver_SEM_Loglikelihoods[,3] <- c(-134.84, -134.84, -134.84, -134.84, -134.84, -134.84)
+Denver_SEM_Loglikelihoods[,4] <- c(-183.16, -183.06, -183.06, -183.16, -183.06, -183.06)
+Denver_SEM_Loglikelihoods[,5] <- c(-216.86, -216.96, -216.97, -216.86, -216.96, -216.97)
+Denver_SEM_Loglikelihoods[,6] <- c(-134.67, -134.84, -134.84, -134.67, -134.84, -134.84)
+colnames(Denver_SEM_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+
+Denver_SEM_Loglikelihoods
 ```
 
-```{r boston_models, echo=FALSE}
+### Denver SDM Models
+Models 1 and 4 are most likely (both equally so) for physical activity and mental health, but least likely for obesity.
+```{r denver_SDM_models, echo=FALSE}
 
-Boston_Loglikelihoods <- data.frame(row.names=paste("Boston",1:6))
-Boston_Loglikelihoods[,1] <- c(-258.16, -258.16, -258.16, -258.16, -258.16, -258.16)
-Boston_Loglikelihoods[,2] <- c(-312.80, -312.80, -312.80, -312.80, -312.80, -312.80)
-Boston_Loglikelihoods[,3] <- c(-312.80, -312.80, -312.80, -312.80, -312.80, -312.80)
-Boston_Loglikelihoods[,4] <- c(-258.16, -258.16, -258.15, -258.16, -258.16, -258.15)
-Boston_Loglikelihoods[,5] <- c(-312.80, -312.79, -312.79, -312.80, -312.79, -312.79)
-Boston_Loglikelihoods[,6] <- c(-312.80, -312.79, -312.79, -312.80, -312.79, -312.79)
-colnames(Boston_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+Denver_SDM_Loglikelihoods <- data.frame(row.names=paste("Denver",1:6))
+Denver_SDM_Loglikelihoods[,1] <- c(-158.89, -158.89, -158.89, -158.89, -158.89, -158.89)
+Denver_SDM_Loglikelihoods[,2] <- c(-188.72, -188.72, -188.72, -188.72, -188.72, -188.72)
+Denver_SDM_Loglikelihoods[,3] <- c(-120.84, -120.84, -120.84, -120.84, -120.84, -120.84)
+Denver_SDM_Loglikelihoods[,4] <- c(-157.99, -158.54, -158.56, -157.99, -158.55, -158.56)
+Denver_SDM_Loglikelihoods[,5] <- c(-185.17, -185.29, -185.34, -185.17, -185.30, -185.34)
+Denver_SDM_Loglikelihoods[,6] <- c(-120.23, -120.64, -120.66, -120.23, -120.64, -120.66)
+colnames(Denver_SDM_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
 
-Boston_Loglikelihoods
+Denver_SDM_Loglikelihoods
 ```
 
-```{r nyc_models, echo=FALSE}
 
-NYC_Loglikelihoods <- data.frame(row.names=paste("NYC   ",1:3))
-NYC_Loglikelihoods[,1] <- c(-3929.85, -3929.85, -3929.85)
-NYC_Loglikelihoods[,2] <- c(-4421.83, -4421.83, -4421.83)
-NYC_Loglikelihoods[,3] <- c(-4421.83, -4421.83, -4421.83)
-NYC_Loglikelihoods[,4] <- c(-3929.14, -3929.14, -3929.36)
-NYC_Loglikelihoods[,5] <- c(-4421.80, -4421.80, -4421.82)
-NYC_Loglikelihoods[,6] <- c(-4421.80, -4421.80, -4421.82)
-colnames(NYC_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+### Boston SEM Models
+Models 3 and 6 are most likely for all three dependent variables.
+```{r boston_SEM_models, echo=FALSE}
 
-NYC_Loglikelihoods
+Boston_SEM_Loglikelihoods <- data.frame(row.names=paste("Boston",1:6))
+Boston_SEM_Loglikelihoods[,1] <- c(-258.16, -258.16, -258.16, -258.16, -258.16, -258.16)
+Boston_SEM_Loglikelihoods[,2] <- c(-312.80, -312.80, -312.80, -312.80, -312.80, -312.80)
+Boston_SEM_Loglikelihoods[,3] <- c(-211.45, -211.45, -211.45, -211.45, -211.45, -211.45)
+Boston_SEM_Loglikelihoods[,4] <- c(-258.16, -258.16, -258.15, -258.16, -258.16, -258.15)
+Boston_SEM_Loglikelihoods[,5] <- c(-312.80, -312.79, -312.79, -312.80, -312.79, -312.79)
+Boston_SEM_Loglikelihoods[,6] <- c(-211.44, -211.43, -211.36, -211.44, -211.43, -211.36)
+colnames(Boston_SEM_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+
+Boston_SEM_Loglikelihoods
 ```
+
+### Boston SDM Models
+Models 1 and 3 are most likely for all three dependent variables.
+```{r boston_SDM_models, echo=FALSE}
+
+Boston_SDM_Loglikelihoods <- data.frame(row.names=paste("Boston",1:6))
+Boston_SDM_Loglikelihoods[,1] <- c(-230.37, -230.37, -230.37, -230.37, -230.37, -230.37)
+Boston_SDM_Loglikelihoods[,2] <- c(-298.10, -298.10, -298.10, -298.10, -298.10, -298.10)
+Boston_SDM_Loglikelihoods[,3] <- c(-198.01, -198.01, -198.01, -198.01, -198.01, -198.01)
+Boston_SDM_Loglikelihoods[,4] <- c(-228.51, -229.42, -229.87, -228.51, -229.42, -229.87)
+Boston_SDM_Loglikelihoods[,5] <- c(-297.21, -297.55, -297.73, -297.21, -297.55, -297.73)
+Boston_SDM_Loglikelihoods[,6] <- c(-197.19, -197.91, -197.74, -197.20, -197.91, -197.74)
+colnames(Boston_SDM_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+
+Boston_SDM_Loglikelihoods
+```
+
+
+### NYC SEM Models
+Models 1 and 2 are most likely (both equally so) for obesity and physical activity. All three models are equally likely for mental health.
+```{r nyc_SEM_models, echo=FALSE}
+
+NYC_SEM_Loglikelihoods <- data.frame(row.names=paste("NYC   ",1:3))
+NYC_SEM_Loglikelihoods[,1] <- c(-3929.85, -3929.85, -3929.85)
+NYC_SEM_Loglikelihoods[,2] <- c(-4421.83, -4421.83, -4421.83)
+NYC_SEM_Loglikelihoods[,3] <- c(-2716.36, -2716.36, -2716.36)
+NYC_SEM_Loglikelihoods[,4] <- c(-3929.14, -3929.14, -3929.36)
+NYC_SEM_Loglikelihoods[,5] <- c(-4421.80, -4421.80, -4421.82)
+NYC_SEM_Loglikelihoods[,6] <- c(-2716.33, -2716.33, -2716.33)
+colnames(NYC_SEM_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+
+NYC_SEM_Loglikelihoods
+```
+
+### NYC SDM Models
+Model 3 is most likely for physical activity and mental health, but Model 1 is most likely for obesity.
+```{r nyc_SDM_models, echo=FALSE}
+
+NYC_SDM_Loglikelihoods <- data.frame(row.names=paste("NYC   ",1:3))
+NYC_SDM_Loglikelihoods[,1] <- c(-3819.95, -3819.95, -3819.95)
+NYC_SDM_Loglikelihoods[,2] <- c(-4369.45, -4369.45, -4369.45)
+NYC_SDM_Loglikelihoods[,3] <- c(-2656.60, -2656.60, -2656.60)
+NYC_SDM_Loglikelihoods[,4] <- c(-3808.52, -3808.53, -3812.65)
+NYC_SDM_Loglikelihoods[,5] <- c(-4368.97, -4368.96, -4368.45)
+NYC_SDM_Loglikelihoods[,6] <- c(-2655.48, -2655.48, -2655.36)
+colnames(NYC_SDM_Loglikelihoods) <- c("Obesity_Noparks", "Physact_Noparks", "Mental_Noparks", "Obesity_Parks", "Physact_Parks", "Mental_Parks")
+
+NYC_SDM_Loglikelihoods
+```
+
+
+
+
+
+
+
+
