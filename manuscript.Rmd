@@ -3,8 +3,8 @@ title: "Manuscript"
 author: "Nico Boyd, Greg Macfarlane, Kari Watkins, Dave Ederer"
 date: "6/16/2017"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup}
@@ -116,10 +116,10 @@ Calculate the logsum given the tracts and parks dataset:
 ```{r accessibility}
 regression_data[[1]]["park_ls"] <- calculate_park_logsums(
   denver_tracts, denver_parks, betas = c(.00001, -5))
-# regression_data[[2]]["park_ls"] <- calculate_park_logsums(
-#   boston_tracts, boston_parks, betas = c(.00001, -30))
-# regression_data[[3]]["park_ls"] <- calculate_park_logsums(
-#   nyc_tracts, nyc_parks, betas = c(.00001, -5))
+#regression_data[[2]]["park_ls"] <- calculate_park_logsums(
+ # boston_tracts, boston_parks, betas = c(.00001, -30))
+#regression_data[[3]]["park_ls"] <- calculate_park_logsums(
+ # nyc_tracts, nyc_parks, betas = c(.00001, -5))
 ```
 
 Create regression equations for use in spatial econometric models:
@@ -128,7 +128,7 @@ We looked at income and it doesn't matter.
 ```{r regression_eq}
 base_formula <- formula(
   ~ log(Pop_Density) + FulltimeWork + 
-    CollegePercent + SinglePercent + Pct0to17 + Pct18to29 + Pct30to64 + 
+    CollegeDeg + SinglePercent + Pct0to17 + Pct18to29 + Pct30to64 + 
     Pct65plus + PctWhite + PctBlack + PctNative + PctAsian + PctPacific + 
     PctOther + PctHispanic)
 
@@ -169,7 +169,7 @@ of each different type does not include `park_ls`:
 ```{r linear_models}
 # this lets us run all of the linear models (for all the cities) in like ten 
 # lines of code
-dependent_variables <- c("OBESITY", "PhysAct", "MENTAL")
+dependent_variables <- c("OBESITY", "Phys_Act", "MENTAL")
 
 base_lm <- lapply(seq_along(1:length(dependent_variables)), function(i){
   
@@ -242,7 +242,7 @@ base_sdm <- lapply(seq_along(1:length(dependent_variables)), function(dv){
              tol.solve = 1e-16)
   })
   
-  names(models) <- cities[1]
+  names(models) <- cities[1:3]
   return(models)
 })
 
@@ -289,9 +289,9 @@ names(mc_impacts) <- dependent_variables
 Compare the models with `htmlreg()`. First the obesity models:
 ```{r denver_obesity_summary, results="asis", eval=FALSE}
 denver_obesity_models <- list(
-  base_sem$OBESITY$denver, park_sem$OBESITY$denver,
-  base_sdm$OBESITY$denver, park_sdm$OBESITY$denver
-)
+  #base_sem$OBESITY$denver, park_sem$OBESITY$denver,
+  base_sdm$OBESITY$denver, park_sdm$OBESITY$denver,
+  )
 
 names(denver_obesity_models) <- paste(rep(c("SEM", "SDM"), each = 2), 
                                       rep(c("Base", "Parks")))
