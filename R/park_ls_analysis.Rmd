@@ -1,0 +1,355 @@
+---
+title: "Park Access Analysis"
+author: "Nico Boyd"
+date: "August 2, 2017"
+output: html_document
+---
+
+In this document I list the park_ls coefficient values for all models, indicate the presence or lack of significance, and note interesting findings that could become part of an overarching narrative in our paper.
+
+# **Denver**
+
+## **Denver 1** (size = .00001, distance = -5)
+
+### Obesity Models
+* OLS -> -0.05 (not significant)
+* SAR -> -0.04 (not significant)
+* SEM -> -0.05 (not significant)
+* SDM -> +0.08 (not significant)  lag of park_ls = +0.19 (not significant)
+    
+### Physical Activity Models
+* OLS -> +0.14 (not significant)
+* SAR -> +0.14 (not significant)
+* SEM -> +0.06 (not significant)
+* SDM -> +0.23 (not significant)  lag of park_ls = +0.42 (**significant @ 0.01**)
+    
+  > *When my neighbors get better park access, I become less active. This model is one of the two most likely Spatial      Durbin models, the other being model 4.*
+
+### Mental Health Models
+* OLS -> +0.05 (not significant)
+* SAR -> +0.05 (not significant)
+* SEM -> +0.04 (not significant)
+* SDM -> +0.06 (not significant)  lag of park_ls = +0.10 (not significant)
+    
+## **Denver 2** (size = .00001, distance = -15)
+
+### Obesity Models
+* OLS -> -0.02 (not significant)
+* SAR -> -0.02 (not significant)
+* SEM -> -0.02 (not significant)
+* SDM -> +0.01 (not significant)  lag of park_ls = +0.04 (not significant)
+    
+### Physical Activity Models
+* OLS -> +0.03 (not significant)
+* SAR -> +0.03 (not significant)
+* SEM -> +0.01 (not significant)
+* SDM -> +0.07 (not significant)  lag of park_ls = +0.14 (**significant at 0.05**)
+    
+   > *When my neighbors get better park access, I become less active.*
+
+### Mental Health Models
+* OLS -> +0.00 (not significant)
+* SAR -> +0.00 (not significant)
+* SEM -> +0.00 (not significant)
+* SDM -> +0.01 (not significant)  lag of park_ls = +0.02 (not significant)
+    
+## **Denver 3** (size = .00001, distance = -30)
+
+### Obesity Models
+* OLS -> -0.01 (not significant)
+* SAR -> -0.01 (not significant)
+* SEM -> -0.01 (not significant)
+* SDM -> +0.00 (not significant)  lag of park_ls = +0.02 (not significant)
+    
+### Physical Activity Models
+* OLS -> +0.01 (not significant)
+* SAR -> +0.02 (not significant)
+* SEM -> +0.00 (not significant)
+* SDM -> +0.03 (not significant)  lag of park_ls = +0.07 (**significant at 0.05**)
+  
+  > *When my neighbors get better park access, I become less physically active.*
+
+### Mental Health Models
+* OLS -> +0.00 (not significant)
+* SAR -> +0.00 (not significant)
+* SEM -> -0.00 (not significant)
+* SDM -> +0.00 (not significant)  lag of park_ls = +0.01 (not significant)
+
+## **Denver 4** (size = .0001, distance = -5)
+
+### Obesity Models
+* OLS -> -0.05 (not significant)
+* SAR -> -0.04 (not significant)
+* SEM -> -0.05 (not significant)
+* SDM -> +0.08 (not significant)  lag of park_ls = +0.19 (not significant)
+
+### Physical Activity Models
+* OLS -> +0.14 (not significant)
+* SAR -> +0.14 (not significant)
+* SEM -> +0.06 (not significant)
+* SDM -> +0.23 (**significant at 0.05**)  lag of park_ls = +0.42 (**significant at 0.05**)
+
+  > *When I have better park access, I become less active. When my neighbors have better park access, I become even        less active. This model is one of the two most likely Spatial Durbin models, the other being model 1.*
+
+### Mental Health Models
+* OLS -> +0.05 (not significant)
+* SAR -> +0.05 (not significant)
+* SEM -> +0.04 (not significant)
+* SDM -> +0.06 (not significant)  lag of park_ls = +0.10 (not significant)
+
+## **Denver 5** (size = .0001, distance = -15)
+
+### Obesity Models
+* OLS -> -0.02 (not significant)
+* SAR -> -0.02 (not significant)
+* SEM -> -0.02 (not significant)
+* SDM -> +0.01 (not significant)  lag of park_ls = +0.04 (not significant)
+
+### Physical Activity Models
+* OLS -> +0.03 (not significant)
+* SAR -> +0.03 (not significant)
+* SEM -> +0.01 (not significant)
+* SDM -> +0.07 (not significant)  lag of park_ls = +0.14 (**significant at 0.05**)
+
+  > *When my neighbors have better park access, I become less active.*
+
+### Mental Health Models
+* OLS -> +0.00 (not significant)
+* SAR -> +0.00 (not significant)
+* SEM -> +0.00 (not significant)
+* SDM -> +0.01 (not significant)  lag of park_ls = +0.02 (not significant)
+
+## **Denver 6** (size = .0001, distance = -30)
+
+### Obesity Models
+* OLS -> -0.01 (not significant)
+* SAR -> -0.01 (not significant)
+* SEM -> -0.01 (not significant)
+* SDM -> +0.00 (not significant)  lag of park_ls = +0.02 (not significant)
+
+### Physical Activity Models
+* OLS -> +0.01 (not significant)
+* SAR -> +0.02 (not significant)
+* SEM -> +0.00 (not significant)
+* SDM -> +0.03 (not significant)  lag of park_ls = +0.07 (**significant at 0.05**)
+
+  > *When my neighbors get better park access, I become less active.*
+
+### Mental Health Models
+* OLS -> +0.00 (not significant)
+* SAR -> +0.00 (not significant)
+* SEM -> -0.00 (not significant)
+* SDM -> +0.00 (not significant)  lag of park_ls = +0.01 (not significant)
+
+# **Boston**
+
+## **Boston 1** (size = .00001, distance = -5)
+
+### Obesity Models
+* OLS -> +0.00 (not significant)
+* SAR -> -0.04 (not significant)
+* SEM -> -0.01 (not significant)
+* SDM -> -0.30 (not significant)  lag of park_ls = -0.13 (not significant)
+
+### Physical Activity Models
+* OLS -> -0.03 (not significant)
+* SAR -> -0.04 (not significant)
+* SEM -> -0.02 (not significant)
+* SDM -> -0.23 (not significant)  lag of park_ls = -0.26 (not significant)
+
+### Mental Health Models
+* OLS -> +0.04 (not significant)
+* SAR -> +0.02 (not significant)
+* SEM -> +0.02 (not significant)
+* SDM -> -0.31 (not significant)  lag of park_ls = +0.31 (not significant)
+
+## **Boston 2** (size = .00001, distance = -15)
+
+### Obesity Models
+* OLS -> +0.01 (not significant)
+* SAR -> +0.00 (not significant)
+* SEM -> +0.00 (not significant)
+* SDM -> -0.08 (not significant)  lag of park_ls = -0.09 (not significant)
+
+### Physical Activity Models
+* OLS -> -0.02 (not significant)
+* SAR -> -0.02 (not significant)
+* SEM -> -0.02 (not significant)
+* SDM -> -0.03 (not significant)  lag of park_ls = -0.19 (not significant)
+
+### Mental Health Models
+* OLS -> +0.02 (not significant)
+* SAR -> +0.02 (not significant)
+* SEM -> +0.01 (not significant)
+* SDM -> -0.01 (not significant)  lag of park_ls = +0.05 (not significant)
+
+## **Boston 3** (size = .00001, distance = -30)
+
+### Obesity Models
+* OLS -> +0.01 (not significant)
+* SAR -> +0.01 (not significant)
+* SEM -> +0.01 (not significant)
+* SDM -> -0.03 (not significant)  lag of park_ls = -0.04 (not significant)
+
+### Physical Activity Models
+* OLS -> -0.01 (not significant)
+* SAR -> -0.01 (not significant)
+* SEM -> -0.01 (not significant)
+* SDM -> -0.00 (not significant)  lag of park_ls = -0.09 (not significant)
+
+### Mental Health Models
+* OLS -> +0.02 (not significant)
+* SAR -> +0.02 (not significant)
+* SEM -> +0.01 (not significant)
+* SDM -> +0.02 (not significant)  lag of park_ls = +0.03 (not significant)
+
+## **Boston 4** (size = .0001, distance = -5)
+
+### Obesity Models
+* OLS -> +0.00 (not significant)
+* SAR -> -0.04 (not significant)
+* SEM -> -0.01 (not significant)
+* SDM -> -0.30 (not significant)  lag of park_ls = -0.13 (not significant)
+
+### Physical Activity Models
+* OLS -> -0.03 (not significant)
+* SAR -> -0.04 (not significant)
+* SEM -> -0.02 (not significant)
+* SDM -> -0.23 (not significant)  lag of park_ls = -0.26 (not significant)
+
+### Mental Health Models
+* OLS -> +0.04 (not significant)
+* SAR -> +0.02 (not significant)
+* SEM -> +0.02 (not significant)
+* SDM -> -0.31 (not significant)  lag of park_ls = +0.34 (not significant)
+
+## **Boston 5** (size = .0001, distance = -15)
+
+### Obesity Models
+* OLS -> +0.01 (not significant)
+* SAR -> +0.00 (not significant)
+* SEM -> +0.00 (not significant)
+* SDM -> -0.08 (not significant)  lag of park_ls = -0.09 (not significant)
+
+### Physical Activity Models
+* OLS -> -0.02 (not significant)
+* SAR -> -0.02 (not significant)
+* SEM -> -0.02 (not significant)
+* SDM -> -0.03 (not significant)  lag of park_ls = -0.19 (not significant)
+
+### Mental Health Models
+* OLS -> +0.02 (not significant)
+* SAR -> +0.02 (not significant)
+* SEM -> +0.01 (not significant)
+* SDM -> -0.01 (not significant)  lag of park_ls = +0.05 (not significant)
+
+## **Boston 6** (size = .0001, distance = -30)
+
+### Obesity Models
+* OLS -> +0.01 (not significant)
+* SAR -> +0.01 (not significant)
+* SEM -> +0.01 (not significant)
+* SDM -> -0.03 (not significant)  lag of park_ls = -0.04 (not significant)
+
+### Physical Activity Models
+* OLS -> -0.01 (not significant)
+* SAR -> -0.01 (not significant)
+* SEM -> -0.01 (not significant)
+* SDM -> -0.00 (not significant)  lag of park_ls = -0.09 (not significant)
+
+### Mental Health Models
+* OLS -> +0.02 (not significant)
+* SAR -> +0.02 (not significant)
+* SEM -> +0.01 (not significant)
+* SDM -> +0.02 (not significant)  lag of park_ls = +0.03 (not significant)
+
+# **NYC**
+
+## **NYC 1** (size = .00001, distance = -5)
+
+### Obesity Models
+* OLS -> -0.74 (**significant at 0.001**)
+* SAR -> -0.76 (**significant at 0.001**)
+* SEM -> -0.12 (not significant)
+* SDM -> +0.04 (not significant)  lag of park_ls = -0.43 (**significant at 0.001**)
+
+  > *As my neighbors' park access decreases, I become more obese. Conversely, as my neighbors get better access to         parks, I become less obese. This spatial durbin model of obesity is the most likely in NYC.*
+
+### Physical Activity Models
+* OLS -> -0.05 (not significant)
+* SAR -> -0.16 (not significant)
+* SEM -> -0.02 (not significant)
+* SDM -> +0.05 (not significant)  lag of park_ls = -0.15 (not significant)
+
+### Mental Health Models
+* OLS -> -0.01 (not significant)
+* SAR -> -0.06 (not significant)
+* SEM -> +0.01 (not significant)
+* SDM -> -0.08 (not significant)  lag of park_ls = +0.03 (not significant)
+
+## **NYC 2** (size = .0001, distance = -5)
+
+### Obesity Models
+* OLS -> -0.74 (**significant at 0.001**)
+* SAR -> -0.76 (**significant at 0.001**)
+* SEM -> -0.12 (not significant)
+* SDM -> +0.04 (not significant)  lag of park_ls = -0.43 (**significant at 0.01**)
+
+  > *The OLS and SAR models indicate that I become less obese as my access to parks improves. The SDM model indicates      that as my neighbors get better access to parks, I become less obese.*
+
+### Physical Activity Models
+* OLS -> -0.05 (not significant)
+* SAR -> -0.16 (not significant)
+* SEM -> -0.02 (not significant)
+* SDM -> +0.05 (not significant)  lag of park_ls = -0.15 (not significant)
+
+### Mental Health Models
+* OLS -> -0.01 (not significant)
+* SAR -> -0.06 (not significant)
+* SEM -> +0.01 (not significant)
+* SDM -> -0.08 (not significant)  lag of park_ls = +0.03 (not significant)
+
+## **NYC 3** (size = .00001, distance = -15)
+
+### Obesity Models
+* OLS -> -0.21 (**significant at 0.001**)
+* SAR -> -0.21 (**significant at 0.001**)
+* SEM -> -0.03 (not significant)
+* SDM -> -0.03 (not significant)  lag of park_ls = -0.14 (**significant at 0.01**)
+
+  > *The OLS and SAR models indicate that I become less obese as my access to parks improves. The SDM model indicates      that as my neighbors get better access to parks, I become less obese.* 
+
+### Physical Activity Models
+* OLS -> -0.02 (not significant)
+* SAR -> -0.04 (not significant)
+* SEM -> -0.00 (not significant)
+* SDM -> +0.01 (not significant)  lag of park_ls = -0.09 (not significant)
+
+### Mental Health Models
+* OLS -> -0.01 (not significant)
+* SAR -> -0.02 (not significant)
+* SEM -> -0.00 (not significant)
+* SDM -> -0.02 (not significant)  lag of park_ls = -0.01 (not significant)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
