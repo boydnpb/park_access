@@ -57,13 +57,13 @@ denver_parks <- geojson_read ("data/denver_parks.geojson", what = "sp")
 
 
 boston_tracts <- geojson_read("data/boston_tracts.geojson", what = "sp")
-boston_parks <- geojson_read("data/boston_parks.geojson", what = "sp")
+boston_parks <- geojson_read("data/boston_parks_final.geojson", what = "sp")
 boston_parks$Park_Acres <- boston_parks$Acreage
 
 nyc_tracts <- geojson_read("data/nyc_tracts.geojson", what = "sp")
 nyc_tracts$GEOID10 <- nyc_tracts$GEOID
 nyc_tracts$SinglePercent <- nyc_tracts$Single_Percent
-nyc_parks <- geojson_read("data/nyc_parks.geojson", what = "sp")
+nyc_parks <- geojson_read("data/nyc_parks_final.geojson", what = "sp")
 
 
 tract_shapes <- list(denver_tracts, boston_tracts, nyc_tracts)
