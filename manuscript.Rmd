@@ -25,6 +25,8 @@ source("R/impact_summary.R")
 
 # variables
 cities <- c("denver", "boston", "nyc")
+#cities <- c("boston", "denver", "nyc")
+#cities <- c("nyc", "boston", "denver")
 ```
 
 
@@ -49,6 +51,8 @@ Our anticipated results will assess the difference in physical activity and obes
 ```{r load_data}
 # I've standardized the variable names based on the Boston dataset, so let's use those variable names moving forward. I also removed the Northeasternmost census tract from the Denver dataset as you suggested.
 
+## I removed the really large Northeasternmost census tracts from Boston as well as a number of private parks. I also removed professional sports stadiums from the NYC parks dataset.
+
 denver_tracts <- geojson_read("data/denver_tracts.geojson", what = "sp")
 denver_tracts$GEOID10 <- denver_tracts$GEOID_TRAC
 denver_tracts$Phys_Act <- denver_tracts$PhysAct
@@ -66,8 +70,12 @@ nyc_tracts$SinglePercent <- nyc_tracts$Single_Percent
 nyc_parks <- geojson_read("data/nyc_parks_final.geojson", what = "sp")
 
 
+#tract_shapes <- list (boston_tracts, denver_tracts, nyc_tracts)
 tract_shapes <- list(denver_tracts, boston_tracts, nyc_tracts)
+#tract_shapes <- list(nyc_tracts, boston_tracts, denver_tracts)
+#park_shapes <- list(boston_parks, denver_parks, nyc_parks)
 park_shapes <- list(denver_parks, boston_parks, nyc_parks)
+#park_shapes <- list(nyc_parks, boston_parks, denver_parks)
 ```
 
 
@@ -79,10 +87,14 @@ Plot Denver geospatial data (tracts and parks):
 ```{r denver_data}
 
 #denver_tracts2 <- readOGR(dsn = "data/Denver_Data.gdb", layer = "Denver_Final") 
+#plot(boston_tracts)
 plot(denver_tracts)
+#plot(nyc_tracts)
 
 #denver_parks2 <- readOGR(dsn = "data/Denver_Data.gdb", layer = "Denver_All_Parks") 
+#plot(boston_parks)
 plot(denver_parks)
+#plot(nyc_parks)
 ```
 
 Transform the attribute table into a tibble and select the relevant variables:
@@ -102,11 +114,15 @@ regression_data <-
 
 
 ```{r}
+#boston_plots <- spTransform(boston_tracts, CRSobj = CRS("+init=epsg:4326"))
 denver_plots <- spTransform(denver_tracts, CRSobj = CRS("+init=epsg:4326"))
+#nyc_plots <- spTransform(nyc_tracts, CRSobj = CRS("+init=epsg:4326"))
 library(leaflet)
 leaflet() %>%
   addTiles() %>%
+  #addPolygons(data = nyc_plots)
   addPolygons(data = denver_plots)
+  #addPolygons(data = boston_plots)
 ```
 
 
@@ -115,7 +131,11 @@ DISCUSSION OF LOGSUM CALCULATION
 Calculate the logsum given the tracts and parks dataset:
 ```{r accessibility}
 regression_data[[1]]["park_ls"] <- calculate_park_logsums(
-  denver_tracts, denver_parks, betas = c(.00001, -5))
+  denver_tracts, denver_parks, betas = c(.00001, -15))
+#regression_data[[1]]["park_ls"] <- calculate_park_logsums(
+  #boston_tracts, boston_parks, betas = c(.00001, -5))
+#regression_data[[1]]["park_ls"] <- calculate_park_logsums(
+  #nyc_tracts, nyc_parks, betas = c(.00001, -15))
 #regression_data[[2]]["park_ls"] <- calculate_park_logsums(
  # boston_tracts, boston_parks, betas = c(.00001, -30))
 #regression_data[[3]]["park_ls"] <- calculate_park_logsums(
@@ -242,7 +262,7 @@ base_sdm <- lapply(seq_along(1:length(dependent_variables)), function(dv){
              tol.solve = 1e-16)
   })
   
-  names(models) <- cities[1:3]
+  names(models) <- cities[1:1]
   return(models)
 })
 
