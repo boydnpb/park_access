@@ -24,8 +24,8 @@ source("R/logsums.R")
 source("R/impact_summary.R")
 
 # variables
-cities <- c("denver", "boston", "nyc")
-#cities <- c("boston", "denver", "nyc")
+#cities <- c("denver", "boston", "nyc")
+cities <- c("boston", "denver", "nyc")
 #cities <- c("nyc", "boston", "denver")
 ```
 
@@ -70,11 +70,11 @@ nyc_tracts$SinglePercent <- nyc_tracts$Single_Percent
 nyc_parks <- geojson_read("data/nyc_parks_final.geojson", what = "sp")
 
 
-#tract_shapes <- list (boston_tracts, denver_tracts, nyc_tracts)
-tract_shapes <- list(denver_tracts, boston_tracts, nyc_tracts)
+tract_shapes <- list (boston_tracts, denver_tracts, nyc_tracts)
+#tract_shapes <- list(denver_tracts, boston_tracts, nyc_tracts)
 #tract_shapes <- list(nyc_tracts, boston_tracts, denver_tracts)
-#park_shapes <- list(boston_parks, denver_parks, nyc_parks)
-park_shapes <- list(denver_parks, boston_parks, nyc_parks)
+park_shapes <- list(boston_parks, denver_parks, nyc_parks)
+#park_shapes <- list(denver_parks, boston_parks, nyc_parks)
 #park_shapes <- list(nyc_parks, boston_parks, denver_parks)
 ```
 
@@ -87,13 +87,13 @@ Plot Denver geospatial data (tracts and parks):
 ```{r denver_data}
 
 #denver_tracts2 <- readOGR(dsn = "data/Denver_Data.gdb", layer = "Denver_Final") 
-#plot(boston_tracts)
-plot(denver_tracts)
+plot(boston_tracts)
+#plot(denver_tracts)
 #plot(nyc_tracts)
 
 #denver_parks2 <- readOGR(dsn = "data/Denver_Data.gdb", layer = "Denver_All_Parks") 
-#plot(boston_parks)
-plot(denver_parks)
+plot(boston_parks)
+#plot(denver_parks)
 #plot(nyc_parks)
 ```
 
@@ -114,15 +114,15 @@ regression_data <-
 
 
 ```{r}
-#boston_plots <- spTransform(boston_tracts, CRSobj = CRS("+init=epsg:4326"))
-denver_plots <- spTransform(denver_tracts, CRSobj = CRS("+init=epsg:4326"))
+boston_plots <- spTransform(boston_tracts, CRSobj = CRS("+init=epsg:4326"))
+#denver_plots <- spTransform(denver_tracts, CRSobj = CRS("+init=epsg:4326"))
 #nyc_plots <- spTransform(nyc_tracts, CRSobj = CRS("+init=epsg:4326"))
 library(leaflet)
 leaflet() %>%
   addTiles() %>%
   #addPolygons(data = nyc_plots)
-  addPolygons(data = denver_plots)
-  #addPolygons(data = boston_plots)
+  #addPolygons(data = denver_plots)
+  addPolygons(data = boston_plots)
 ```
 
 
@@ -130,10 +130,10 @@ DISCUSSION OF LOGSUM CALCULATION
 
 Calculate the logsum given the tracts and parks dataset:
 ```{r accessibility}
-regression_data[[1]]["park_ls"] <- calculate_park_logsums(
-  denver_tracts, denver_parks, betas = c(.00001, -15))
 #regression_data[[1]]["park_ls"] <- calculate_park_logsums(
-  #boston_tracts, boston_parks, betas = c(.00001, -5))
+  #denver_tracts, denver_parks, betas = c(.00001, -15))
+regression_data[[1]]["park_ls"] <- calculate_park_logsums(
+  boston_tracts, boston_parks, betas = c(.00001, -5))
 #regression_data[[1]]["park_ls"] <- calculate_park_logsums(
   #nyc_tracts, nyc_parks, betas = c(.00001, -15))
 #regression_data[[2]]["park_ls"] <- calculate_park_logsums(
