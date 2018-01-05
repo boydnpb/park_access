@@ -7,7 +7,7 @@ output:
   pdf_document: default
 ---
 
-```{r setup}
+```{r setup, cache = FALSE, warning = FALSE, message = FALSE}
 library(geojsonio)
 library(leaflet)
 library(tidyverse)
