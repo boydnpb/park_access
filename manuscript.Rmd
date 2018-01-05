@@ -74,25 +74,52 @@ park_shapes <- list(boston_parks, denver_parks, nyc_parks)
 ```
 
 
-# Results
+Consider that an individual is choosing a park for a recreation activity.
+According to basic choice theory (Mcfadden 1974), the probability of choosing
+park $i$ from the set of all regional parks $P$ is:
 
-## Denver
+$$ P(i | V_i) = \frac{\exp(V_i)}{\sum_{j \in P}\exp(V_j)}$$
+where parks are differentiated from each other by their relative measurable
+utilitie $V$. In principle, $V$ may include any measurable attributes of either
+the choice maker or the park. In this study we use an elementary linear formulation of
 
-Plot Denver geospatial data (tracts and parks):
-```{r denver_data}
+$$V_i = \beta_a acreage + \beta_d distance$$
+incorporating the size of the park in acres and the distance of the park from
+each census tract in miles. The coefficients $\beta$ are typically estimated from 
+surveys, though in the absence of a survey we apply a maximum likelihood
+technique described below.
 
-#denver_tracts2 <- readOGR(dsn = "data/Denver_Data.gdb", layer = "Denver_Final") 
-plot(boston_tracts)
-#plot(denver_tracts)
-#plot(nyc_tracts)
+A key theoretical understanding of random utility choice models is that the
+consumer surplus of the choice set can be otained as the log-sum of the
+denominator of the choice probability equation. In plainer terms, the *total value*
+of an individual's park accessibility is defined to be:
 
-#denver_parks2 <- readOGR(dsn = "data/Denver_Data.gdb", layer = "Denver_All_Parks") 
-plot(boston_parks)
-#plot(denver_parks)
-#plot(nyc_parks)
-```
+$$\ln\left({\sum_{j \in P}\exp(V_j)}\right)$$
 
-Transform the attribute table into a tibble and select the relevant variables:
+There are several advantages to a log-sum defined metric relative to
+buffer-based accessibility metrics more commonly found in the literature. First,
+all individuals are defined as having some access to all parks, rather than an
+arbitrary limit of 1/2 mile or so. This allows for the fact that some people are
+more or less sensitive to distances, and that distance is a continuous, and not
+a binary, phenomenon. Second, the random utility formulation allows the
+researcher to include any attribute of the park; in this case, we consider the
+size of the park as an element of accessibility. This suggests that not all
+parks are equal, and that a large park such as New York City's Central Park may
+provide health and activity benefits over a much larger area than a smaller
+community square.
+
+McFadden, D. (1974). The measurement of urban travel demand. Journal of public economics, 3(4), 303-328.
+
+In the absence of a park choice survey, we estimated likely values of the $\beta$ 
+coefficients by iteratively searching for the values which produced the highest
+model likelihood in *which model did we use to estimate likelihood?*. The search
+was constrained by two assertions. First, we required that the coefficient on
+size be positive and that on distance negative; all else equal, people will
+prefer to use larger parks that are nearer to their residence. Second, we visually
+inspected the resulting accessibility scores to ensure that the scores produced a 
+reasonably varied pattern of access throughout the metropolitan region.
+
+
 ```{r transformdata}
 #TODO: make sure all cities have the same data in the same names. It will save 
 # us LOTS of time
@@ -108,7 +135,7 @@ regression_data <-
 ```
 
 
-```{r}
+```{r city_plots, eval = FALSE}
 boston_plots <- spTransform(boston_tracts, CRSobj = CRS("+init=epsg:4326"))
 denver_plots <- spTransform(denver_tracts, CRSobj = CRS("+init=epsg:4326"))
 nyc_plots <- spTransform(nyc_tracts, CRSobj = CRS("+init=epsg:4326"))
@@ -121,23 +148,26 @@ leaflet() %>%
 ```
 
 
-DISCUSSION OF LOGSUM CALCULATION
-
-Calculate the logsum given the tracts and parks dataset:
-```{r accessibility}
+```{r betas}
 betas <- list(
   boston = c(0.00001, -30), 
   denver = c(0.00001, -15), 
   nyc = c(0.0001, -5)
 )
+```
+
+
+Calculate the logsum given the tracts and parks dataset:
+```{r accessibility}
 for(i in 1:length(cities)){
   regression_data[[i]]["park_ls"] <- calculate_park_logsums(
     tract_shapes[[i]], park_shapes[[i]], betas = betas[[i]])
 }
 ```
 
-Create regression equations for use in spatial econometric models:
 
+# Results
+Create regression equations for use in spatial econometric models:
 We looked at income and it doesn't matter.
 ```{r regression_eq}
 base_formula <- formula(
