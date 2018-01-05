@@ -18,15 +18,14 @@ library(rgeos)
 library(texreg)
 library(leaflet)
 
+knitr::opts_chunk$set(cache = TRUE)
 
 # source functions
 source("R/logsums.R")
 source("R/impact_summary.R")
 
 # variables
-#cities <- c("denver", "boston", "nyc")
 cities <- c("boston", "denver", "nyc")
-#cities <- c("nyc", "boston", "denver")
 ```
 
 
@@ -71,11 +70,7 @@ nyc_parks <- geojson_read("data/nyc_parks_final.geojson", what = "sp")
 
 
 tract_shapes <- list (boston_tracts, denver_tracts, nyc_tracts)
-#tract_shapes <- list(denver_tracts, boston_tracts, nyc_tracts)
-#tract_shapes <- list(nyc_tracts, boston_tracts, denver_tracts)
 park_shapes <- list(boston_parks, denver_parks, nyc_parks)
-#park_shapes <- list(denver_parks, boston_parks, nyc_parks)
-#park_shapes <- list(nyc_parks, boston_parks, denver_parks)
 ```
 
 
@@ -103,7 +98,7 @@ Transform the attribute table into a tibble and select the relevant variables:
 # us LOTS of time
 # denver only, because the other cities have different variables
 regression_data <-
-  lapply(seq_along(1:1), function(i) {
+  lapply(seq_along(1:length(cities)), function(i) {
     tbl_df(tract_shapes[[i]]@data) %>%
       mutate(
         Park_Percent = ifelse(is.na(Park_Percent), 0, Park_Percent),
@@ -115,8 +110,8 @@ regression_data <-
 
 ```{r}
 boston_plots <- spTransform(boston_tracts, CRSobj = CRS("+init=epsg:4326"))
-#denver_plots <- spTransform(denver_tracts, CRSobj = CRS("+init=epsg:4326"))
-#nyc_plots <- spTransform(nyc_tracts, CRSobj = CRS("+init=epsg:4326"))
+denver_plots <- spTransform(denver_tracts, CRSobj = CRS("+init=epsg:4326"))
+nyc_plots <- spTransform(nyc_tracts, CRSobj = CRS("+init=epsg:4326"))
 library(leaflet)
 leaflet() %>%
   addTiles() %>%
@@ -130,16 +125,15 @@ DISCUSSION OF LOGSUM CALCULATION
 
 Calculate the logsum given the tracts and parks dataset:
 ```{r accessibility}
-#regression_data[[1]]["park_ls"] <- calculate_park_logsums(
-  #denver_tracts, denver_parks, betas = c(.00001, -15))
-regression_data[[1]]["park_ls"] <- calculate_park_logsums(
-  boston_tracts, boston_parks, betas = c(.00001, -5))
-#regression_data[[1]]["park_ls"] <- calculate_park_logsums(
-  #nyc_tracts, nyc_parks, betas = c(.00001, -15))
-#regression_data[[2]]["park_ls"] <- calculate_park_logsums(
- # boston_tracts, boston_parks, betas = c(.00001, -30))
-#regression_data[[3]]["park_ls"] <- calculate_park_logsums(
- # nyc_tracts, nyc_parks, betas = c(.00001, -5))
+betas <- list(
+  boston = c(0.00001, -30), 
+  denver = c(0.00001, -15), 
+  nyc = c(0.0001, -5)
+)
+for(i in 1:length(cities)){
+  regression_data[[i]]["park_ls"] <- calculate_park_logsums(
+    tract_shapes[[i]], park_shapes[[i]], betas = betas[[i]])
+}
 ```
 
 Create regression equations for use in spatial econometric models:
@@ -223,13 +217,12 @@ base_sem <- lapply(seq_along(1:length(dependent_variables)), function(dv){
   this_formula <- substitute(update(base_formula, x ~ .), 
                              list(x = as.name(dependent_variables[dv]) ))
   
-  # TODO update when more cities are available
-  models <- lapply(seq_along(1:1), function(city){
+  models <- lapply(seq_along(1:length(cities)), function(city){
     errorsarlm(this_formula, data = regression_data[[city]],
                listw = list_ws[[city]], zero.policy = TRUE)
   })
   
-  names(models) <- cities[1]
+  names(models) <- cities
   return(models)
 })
 
@@ -237,13 +230,12 @@ park_sem <- lapply(seq_along(1:length(dependent_variables)), function(dv){
   this_formula <- substitute(update(parks_formula, x ~ .), 
                              list(x = as.name(dependent_variables[dv]) ))
   
-  # TODO update when more cities are available
-  models <- lapply(seq_along(1:1), function(city){
+  models <- lapply(seq_along(1:length(cities)), function(city){
     errorsarlm(this_formula, data = regression_data[[city]],
                listw = list_ws[[city]], zero.policy = TRUE)
   })
   
-  names(models) <- cities[1]
+  names(models) <- cities
   return(models)
 })
 
@@ -255,14 +247,13 @@ base_sdm <- lapply(seq_along(1:length(dependent_variables)), function(dv){
   this_formula <- substitute(update(base_formula, x ~ .), 
                              list(x = as.name(dependent_variables[dv]) ))
   
-  # TODO update when more cities are available
-  models <- lapply(seq_along(1:1), function(city){
+  models <- lapply(seq_along(1:length(cities)), function(city){
     lagsarlm(this_formula, data = regression_data[[city]],
              listw = list_ws[[city]], zero.policy = TRUE, type = "mixed",
              tol.solve = 1e-16)
   })
   
-  names(models) <- cities[1:1]
+  names(models) <- cities
   return(models)
 })
 
@@ -270,14 +261,13 @@ park_sdm <- lapply(seq_along(1:length(dependent_variables)), function(dv){
   this_formula <- substitute(update(parks_formula, x ~ .), 
                              list(x = as.name(dependent_variables[dv]) ))
   
-  # TODO update when more cities are available
-  models <- lapply(seq_along(1:1), function(city){
+  models <- lapply(seq_along(1:length(cities)), function(city){
     lagsarlm(this_formula, data = regression_data[[city]],
              listw = list_ws[[city]], zero.policy = TRUE, type = "mixed",
              tol.solve = 1e-16)
   })
   
-  names(models) <- cities[1]
+  names(models) <- cities
   return(models)
 })
 
@@ -293,12 +283,11 @@ tr_mc <- lapply(list_ws, function(x){
 
 
 mc_impacts <- lapply(park_sdm, function(dv){
-  # TODO
-  impacts <- lapply(seq_along(1:1), function(i) {
+  impacts <- lapply(seq_along(1:length(cities)), function(i) {
     impact_summary(summary(impacts(dv[[i]], tr = tr_mc[[i]], R = 500, empirical = TRUE)))
   })
   
-  names(impacts) <- cities[1]
+  names(impacts) <- cities
   
   return(impacts)
 })
@@ -309,11 +298,10 @@ names(mc_impacts) <- dependent_variables
 Compare the models with `htmlreg()`. First the obesity models:
 ```{r denver_obesity_summary, results="asis", eval=FALSE}
 denver_obesity_models <- list(
-  #base_sem$OBESITY$denver, park_sem$OBESITY$denver,
-  base_sdm$OBESITY$denver, park_sdm$OBESITY$denver,
+  base_sdm$OBESITY$denver, park_sdm$OBESITY$denver
   )
 
-names(denver_obesity_models) <- paste(rep(c("SEM", "SDM"), each = 2), 
+names(denver_obesity_models) <- paste(rep(c("SDM"), each = 2), 
                                       rep(c("Base", "Parks")))
 
 screenreg(denver_obesity_models, caption = "Denver: Models of Obesity Prevalence")
@@ -322,12 +310,12 @@ screenreg(denver_obesity_models, caption = "Denver: Models of Obesity Prevalence
 Next, the physical activity models:
 ```{r denver_physact_summary, results="asis", eval=FALSE}
 denver_physact_models <- list(
-  base_sem$PhysAct$denver, park_sem$PhysAct$denver,
-  base_sdm$PhysAct$denver, park_sdm$PhysAct$denver
+  base_sem$Phys_Act$denver, park_sem$Phys_Act$denver,
+  base_sdm$Phys_Act$denver, park_sdm$Phys_Act$denver
 )
 names(denver_physact_models) <- paste(rep(c("SEM", "SDM"), each = 2),
                                       rep(c("Base", "Parks")))
-htmlreg(denver_physact_models, caption = "Denver: Models of Physical Activity Participation")
+screenreg(denver_physact_models, caption = "Denver: Models of Physical Activity Participation")
 ```
 
 And third, the mental health models:
